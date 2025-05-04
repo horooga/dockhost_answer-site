@@ -1,0 +1,22 @@
+<head>
+    <meta charset="UTF-8"/>
+    <link rel="stylesheet" href="static/pikme2.css" />
+    <link rel="icon" type="image/x-icon" href="/static/favicon.ico" />
+    <title>Answer</title>
+</head>
+<body>
+    <form method="post" action="#">
+        {% if answers %}
+            <div class="choice-group">
+                {% for answer in answers %}
+                    <input type="radio" id="btn{{ loop.index }}" name="answer" value={{ answer }} required>
+                    <label for="btn{{ loop.index }}">{{ answer }}</label>
+                {% endfor %}
+            </div>
+            <button type="submit">Answer</button>
+        {% else %}
+            <input name="answer">
+            <button type="submit">Answer</button>
+        {% endif %}
+    </form>
+</body>
