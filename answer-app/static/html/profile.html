@@ -1,0 +1,35 @@
+<head>
+    <meta charset="UTF-8"/>
+    <link rel="stylesheet" href="static/pikme2.css" />
+    <link rel="icon" type="image/x-icon" href="/static/favicon.ico" />
+    <title>Answer</title>
+</head>
+<body>
+  <section style="display: flex; flex-direction: column; gap: 24px;">
+    <h1 style="text-align:center;">Profile</h1>
+
+    <div>
+      <strong>Username:</strong>
+      <p style="margin-top: 8px; font-family: 'Press Start 2P', cursive; font-size: 14px;">gamer123</p>
+    </div>
+
+    <div>
+      <strong>Email:</strong>
+      <p style="margin-top: 8px; font-family: 'Press Start 2P', cursive; font-size: 14px;">gamer123@example.com</p>
+    </div>
+
+    <div>
+      <strong>Account Type:</strong>
+      <div class="choice-group" aria-label="Account Type">
+        <input type="radio" id="free" name="accountType" value="free" checked disabled />
+        <label for="free">Free</label>
+
+        <input type="radio" id="premium" name="accountType" value="premium" disabled />
+        <label for="premium">Premium</label>
+      </div>
+    </div>
+
+    <button type="button" onclick="alert('Logged out!')">Log Out</button>
+  </section>
+</body>
+</html>
