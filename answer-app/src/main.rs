@@ -2,9 +2,9 @@ use actix_web::{
     App, Error, HttpResponse, HttpServer, Responder, Result,
     error, get, post,
     http::{StatusCode, header::ContentType},
-    middleware::{self},
+    middleware::Logger,
     web::{Html, Data, Form},
-    cookie::Cookie,
+    cookie::{Cookie, SameSite},
 };
 use actix_files::{Files, NamedFile};
 use tera::Tera;
@@ -20,14 +20,14 @@ fn make_jwt(username: &str) -> Result<String, jsonwebtoken::errors::Error> {
         usrnm: username.to_owned(),
         exp: expiration.unix_timestamp() as usize,
     };
-    encode(&Header::default(), &claims, &EncodingKey::from_secret(JWT_SECRET))
+    encode(&Header::default(), &claims, &EncodingKey::from_secret(&JWT_SECRET))
 }
 
 #[post("/user-login")]
 async fn user_login(Form(form): Form<UserLogin>) -> impl Responder {
     match make_jwt(&form.username) {
         Ok(token) => {
-            let cookie = Cookie::build("jwt", token)
+            let cookie = Cookie::build("token", token)
                 .path("/")
                 .http_only(true)
                 .same_site(SameSite::Lax)
@@ -47,7 +47,7 @@ async fn user_login(Form(form): Form<UserLogin>) -> impl Responder {
 async fn user_register(Form(form): Form<UserLogin>) -> impl Responder {
     match make_jwt(&form.username) {
         Ok(token) => {
-            let cookie = Cookie::build("jwt", token)
+            let cookie = Cookie::build("token", token)
                 .path("/")
                 .http_only(true)
                 .same_site(SameSite::Lax)
@@ -91,10 +91,6 @@ async fn next_question(tmpl: Data<Tera>) -> impl Responder {
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
 
-    let mut buf = [0; 24];
-    let mut JWT_SECRET: &mut[u8] = &mut buf;
-    JWT_SECRET.write(env::var("secret").unwrap().as_bytes()).unwrap();
-
     HttpServer::new(|| {
         let tera = Tera::new("/app/static/html/*").unwrap();
 
@@ -106,6 +102,7 @@ async fn main() -> std::io::Result<()> {
             .service(user_register)
             .service(user_login)
             .service(Files::new("/static", "./static"))
+            .wrap(Logger::new("%r %s %U").log_target("http_log"))
             .app_data(Data::new(tera))
     })
     .bind(("0.0.0.0", 8000))?

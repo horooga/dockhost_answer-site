@@ -269,6 +269,7 @@ dependencies = [
  "actix-files",
  "actix-web",
  "jsonwebtoken",
+ "lazy_static",
  "serde",
  "tera",
  "time",
