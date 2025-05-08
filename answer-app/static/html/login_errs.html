@@ -5,6 +5,12 @@
   <title>Answer</title>
 </head>
 <body>
+  {% if errs %}
+      {% for err in errs %}
+          <h1 style="color:#a00000">err</h1>
+      {% endfor %}
+  {% endif %}
+
   <form action="/user-login" method="POST" autocomplete="off">
     <h1>Login</h1>
 

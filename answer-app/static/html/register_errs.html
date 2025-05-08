@@ -5,15 +5,20 @@
   <title>Answer</title>
 </head>
 <body>
-  <form action="/user-login" method="POST" autocomplete="off">
-    <h1>Login</h1>
+  {% if errs %}
+      {% for err in errs %}
+          <h1 style="color:#a00000">err</h1>
+      {% endfor %}
+  {% endif %}
+  <form action="/user-register" method="POST" autocomplete="off">
+    <h1>Register</h1>
 
     <label for="username">Username</label>
     <input id="username" name="username" type="text" required autocomplete="username">
 
     <label for="password">Password</label>
-    <input id="password" name="password" type="password" required autocomplete="current-password">
+    <input id="password" name="password" type="password" required autocomplete="new-password">
 
-    <button type="submit">Log In</button>
+    <button type="submit">Register</button>
   </form>
 </body>

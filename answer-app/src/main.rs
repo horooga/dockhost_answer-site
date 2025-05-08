@@ -8,43 +8,67 @@ use actix_web::{
 use actix_files::{Files, NamedFile};
 use tera::Tera;
 use std::path::PathBuf;
-use deadpool_postgres::{Client, Pool};
-use tokio_postgres::NoTls;
+use deadpool_postgres::{Config, Client, Pool, ManagerConfig, RecyclingMethod, tokio_postgres::NoTls};
 mod auth;
 use auth::*;
 mod misc;
-use misc::*;
+use misc::{TEXT, LANG, validate};
 mod db;
-use db::*;
+use db::{get_user};
 
 #[post("/user-login")]
-async fn user_login(Form(form): Form<UserLogin>) -> impl Responder {
-    let cookie = Cookie::build("token", encode_jwt(&form.username))
-        .path("/")
-        .http_only(true)
-        .same_site(SameSite::Lax)
-        .max_age(time::Duration::hours(1))
-        .finish();
+async fn user_login(pool: Data<Pool>, tmpl: Data<Tera>, Form(form): Form<UserLogin>) -> Either<HttpResponse, Html> {
+    let client: Client = pool.get().await.unwrap();
+    return match get_user(&client, &form.username).await {
+        Ok(x) => {
+            let cookie = Cookie::build("token", encode_jwt(&form.username))
+                .path("/")
+                .http_only(true)
+                .same_site(SameSite::Lax)
+                .max_age(time::Duration::hours(1))
+                .finish();
 
-    HttpResponse::Found()
-        .append_header(("Location", "/profile"))
-        .cookie(cookie)
-        .finish()
+            Either::Left(HttpResponse::Found()
+                .append_header(("Location", "/profile"))
+                .cookie(cookie)
+                .finish())
+        },
+        Err(x) => {
+            let mut ctx = tera::Context::new();
+            ctx.insert("errors", &x);
+            Either::Right(Html::new(tmpl.render("login_errs.html", &ctx).unwrap()))
+        },
+    }
 }
 
 #[post("/user-register")]
-async fn user_register(Form(form): Form<UserLogin>) -> impl Responder {
-    let cookie = Cookie::build("token", encode_jwt(&form.username))
-        .path("/")
-        .http_only(true)
-        .same_site(SameSite::Lax)
-        .max_age(time::Duration::hours(1))
-        .finish();
+async fn user_register(pool: Data<Pool>, tmpl: Data<Tera>, Form(form): Form<UserLogin>) -> Either<HttpResponse, Html> {
+    let client: Client = pool.get().await.unwrap();
+    if get_user(&client, &form.username).await.is_ok() {
+        let mut ctx = tera::Context::new();
+        ctx.insert("errors", &vec![TEXT["username_registered"][0].to_string()]);
+        return Either::Right(Html::new(tmpl.render("register_errs.html", &ctx).unwrap()));
+    }
+    return match validate(&form.username, &form.password, "RU").await {
+        Ok(x) => {
+            let cookie = Cookie::build("token", encode_jwt(&form.username))
+                .path("/")
+                .http_only(true)
+                .same_site(SameSite::Lax)
+                .max_age(time::Duration::hours(1))
+                .finish();
 
-    HttpResponse::Found()
-        .append_header(("Location", "/profile"))
-        .cookie(cookie)
-        .finish()
+            Either::Left(HttpResponse::Found()
+                .append_header(("Location", "/profile"))
+                .cookie(cookie)
+                .finish())
+        },
+        Err(x) => {
+            let mut ctx = tera::Context::new();
+            ctx.insert("errors", &x);
+            Either::Right(Html::new(tmpl.render("register_errs.html", &ctx).unwrap()))
+        },
+    }
 }
 
 #[get("/")]
@@ -98,7 +122,13 @@ async fn main() -> std::io::Result<()> {
 
     HttpServer::new(|| {
         let tera = Tera::new("/app/static/html/*").unwrap();
-        let pool = config.pg.create_pool(None, NoTls).unwrap();
+
+        let mut cfg = Config::new();
+        cfg.dbname = Some("app".to_string());
+        cfg.manager = Some(ManagerConfig {
+            recycling_method: RecyclingMethod::Fast,
+        });
+        let pool = cfg.create_pool(None, NoTls).unwrap();
 
         App::new()
             .service(index)

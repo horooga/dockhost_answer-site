@@ -1,5 +1,4 @@
 use deadpool_postgres::Client;
-use tokio_pg_mapper::FromTokioPostgresRow;
 use serde::{Deserialize, Serialize};
 use tokio_pg_mapper_derive::PostgresMapper;
 
@@ -11,7 +10,7 @@ pub struct User {
     pub language: String,
 }
 
-pub async fn add_user(client: &Client, user: User) {
+pub async fn add_user(client: &Client, username: &String, password: &String, language: &String) {
     let _stmt = include_str!("../sql/add_user.sql");
     let stmt = client.prepare(&_stmt).await.unwrap();
 
@@ -19,10 +18,25 @@ pub async fn add_user(client: &Client, user: User) {
         .query(
             &stmt,
             &[
-                &user.username,
-                &user.password,
-                &user.language,
+                &username,
+                &password,
+                &language,
             ],
         )
         .await;
+}
+
+pub async fn get_user(client: &Client, username: &String) -> Result<String, String> {
+    let _stmt = include_str!("../sql/get_user.sql");
+    let stmt = client.prepare(&_stmt).await.unwrap();
+
+    return match client
+        .query(
+            &stmt,
+            &[],
+        )
+        .await {
+        Ok(x) => Ok(x[0].columns()[0].name().to_string()),
+        Err(_) => Err("User is not registered!".to_string()),
+    }
 }
