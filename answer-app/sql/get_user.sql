@@ -1,3 +1,3 @@
 SELECT *
-FROM app.users
-WHERE username = $username;
+FROM users
+WHERE username = '$username';

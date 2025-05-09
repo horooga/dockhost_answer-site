@@ -20,7 +20,7 @@ pub struct UserLogin {
 
 lazy_static! {
     static ref env: std::collections::HashMap<String, String> = read_file(".env").unwrap();
-    static ref s: &'static String = &env["secret"];
+    static ref s: &'static String = &env["JWT_SECRET"];
 
     pub static ref JWT_SECRET: &'static [u8] = s.as_bytes();
 }

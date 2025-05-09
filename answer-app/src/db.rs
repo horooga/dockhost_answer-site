@@ -1,13 +1,8 @@
 use deadpool_postgres::Client;
-use serde::{Deserialize, Serialize};
-use tokio_pg_mapper_derive::PostgresMapper;
 
-#[derive(Deserialize, PostgresMapper, Serialize)]
-#[pg_mapper(table = "users")]
 pub struct User {
     pub username: String,
     pub password: String,
-    pub language: String,
 }
 
 pub async fn add_user(client: &Client, username: &String, password: &String, language: &String) {
@@ -26,8 +21,9 @@ pub async fn add_user(client: &Client, username: &String, password: &String, lan
         .await;
 }
 
-pub async fn get_user(client: &Client, username: &String) -> Result<String, String> {
+pub async fn get_user(client: &Client, username: &String) -> Result<User, String> {
     let _stmt = include_str!("../sql/get_user.sql");
+    let _stmt = _stmt.replace("$username", username);
     let stmt = client.prepare(&_stmt).await.unwrap();
 
     return match client
@@ -36,7 +32,15 @@ pub async fn get_user(client: &Client, username: &String) -> Result<String, Stri
             &[],
         )
         .await {
-        Ok(x) => Ok(x[0].columns()[0].name().to_string()),
-        Err(_) => Err("User is not registered!".to_string()),
+        Ok(x) => 
+            if !x.is_empty() {
+               Ok(User {
+                   username: x[0].get(0),
+                   password: x[0].get(1),
+               })
+            } else {
+               Err("User is not registered".to_string())
+            },
+        Err(_) => Err("Sorry, try again later".to_string()),
     }
 }

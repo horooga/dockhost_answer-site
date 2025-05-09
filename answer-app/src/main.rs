@@ -9,18 +9,19 @@ use actix_files::{Files, NamedFile};
 use tera::Tera;
 use std::path::PathBuf;
 use deadpool_postgres::{Config, Client, Pool, ManagerConfig, RecyclingMethod, tokio_postgres::NoTls};
+use env_file_reader::read_file;
 mod auth;
 use auth::*;
 mod misc;
 use misc::{TEXT, LANG, validate};
 mod db;
-use db::{get_user};
+use db::{User, get_user};
 
 #[post("/user-login")]
 async fn user_login(pool: Data<Pool>, tmpl: Data<Tera>, Form(form): Form<UserLogin>) -> Either<HttpResponse, Html> {
     let client: Client = pool.get().await.unwrap();
     return match get_user(&client, &form.username).await {
-        Ok(x) => {
+        Ok(_) => {
             let cookie = Cookie::build("token", encode_jwt(&form.username))
                 .path("/")
                 .http_only(true)
@@ -121,15 +122,21 @@ async fn next_question(tmpl: Data<Tera>, req: HttpRequest) -> Either<Html, Redir
 async fn main() -> std::io::Result<()> {
 
     HttpServer::new(|| {
+        let env: std::collections::HashMap<String, String> = read_file(".env").unwrap();
+
         let tera = Tera::new("/app/static/html/*").unwrap();
 
         let mut cfg = Config::new();
         cfg.dbname = Some("app".to_string());
+        cfg.host = Some("postgres".to_string());
+        cfg.port = Some(5432);
+        cfg.user = Some(env["POSTGRES_USER"].clone());
+        cfg.password = Some(env["POSTGRES_PASSWORD"].clone());
         cfg.manager = Some(ManagerConfig {
             recycling_method: RecyclingMethod::Fast,
         });
         let pool = cfg.create_pool(None, NoTls).unwrap();
-
+ 
         App::new()
             .service(index)
             .service(next_question)
