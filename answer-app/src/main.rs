@@ -11,18 +11,20 @@ use std::path::PathBuf;
 use deadpool_postgres::{Config, Client, Pool, ManagerConfig, RecyclingMethod, tokio_postgres::NoTls};
 use env_file_reader::read_file;
 mod auth;
-use auth::*;
+use auth::{UserLogin, get_lang_id, encode_jwt, decode_jwt_from_req};
 mod misc;
-use misc::{TEXT, LANG, validate};
+use misc::{TEXT, validate};
 mod db;
-use db::{User, get_user};
+use db::{User, add_user, get_user};
 
 #[post("/user-login")]
-async fn user_login(pool: Data<Pool>, tmpl: Data<Tera>, Form(form): Form<UserLogin>) -> Either<HttpResponse, Html> {
+async fn user_login(pool: Data<Pool>, tmpl: Data<Tera>, Form(form): Form<UserLogin>, req: HttpRequest) -> Either<HttpResponse, Html> {
+    let lang_id = get_lang_id(req);
+
     let client: Client = pool.get().await.unwrap();
-    return match get_user(&client, &form.username).await {
+    return match get_user(&client, &form.username, lang_id).await {
         Ok(_) => {
-            let cookie = Cookie::build("token", encode_jwt(&form.username))
+            let cookie = Cookie::build("token", encode_jwt(&form.username, lang_id))
                 .path("/")
                 .http_only(true)
                 .same_site(SameSite::Lax)
@@ -43,16 +45,20 @@ async fn user_login(pool: Data<Pool>, tmpl: Data<Tera>, Form(form): Form<UserLog
 }
 
 #[post("/user-register")]
-async fn user_register(pool: Data<Pool>, tmpl: Data<Tera>, Form(form): Form<UserLogin>) -> Either<HttpResponse, Html> {
+async fn user_register(pool: Data<Pool>, tmpl: Data<Tera>, Form(form): Form<UserLogin>, req: HttpRequest) -> Either<HttpResponse, Html> {
+    let lang_id = get_lang_id(req.clone());
+
     let client: Client = pool.get().await.unwrap();
-    if get_user(&client, &form.username).await.is_ok() {
+    if get_user(&client, &form.username, lang_id).await.is_ok() {
         let mut ctx = tera::Context::new();
-        ctx.insert("errors", &vec![TEXT["username_registered"][0].to_string()]);
+        ctx.insert("errors", &vec![TEXT["username_registered"][lang_id as usize]]);
         return Either::Right(Html::new(tmpl.render("register_errs.html", &ctx).unwrap()));
     }
-    return match validate(&form.username, &form.password, "RU").await {
-        Ok(x) => {
-            let cookie = Cookie::build("token", encode_jwt(&form.username))
+    return match validate(&form.username, &form.password, lang_id).await {
+        Ok(_) => {
+            add_user(&client, &form.username, &form.password, lang_id).await;
+
+            let cookie = Cookie::build("token", encode_jwt(&form.username, lang_id))
                 .path("/")
                 .http_only(true)
                 .same_site(SameSite::Lax)
@@ -72,16 +78,49 @@ async fn user_register(pool: Data<Pool>, tmpl: Data<Tera>, Form(form): Form<User
     }
 }
 
+#[post("/user-logout")]
+async fn user_logout() -> impl Responder {
+    let cookie = Cookie::build("token", encode_jwt("None", 0_u8))
+        .path("/")
+        .http_only(true)
+        .same_site(SameSite::Lax)
+        .max_age(time::Duration::hours(0))
+        .finish();
+    
+    return HttpResponse::Found()
+        .append_header(("Location", "/start"))
+        .cookie(cookie)
+        .finish()
+}
+
 #[get("/")]
-async fn index() -> impl Responder {
-    let path: PathBuf = "./static/html/start.html".parse().unwrap();
-    return NamedFile::open(path).unwrap();
+async fn index(req: HttpRequest) -> impl Responder {
+    let lang_id = get_lang_id(req);
+
+    let cookie = Cookie::build("token", encode_jwt("None", lang_id))
+        .path("/")
+        .http_only(true)
+        .same_site(SameSite::Lax)
+        .max_age(time::Duration::hours(1))
+        .finish();
+    
+    return HttpResponse::Ok()
+        .content_type(ContentType::html())
+        .cookie(cookie)
+        .body("./static/html/start.html");
 }
 
 #[get("/login")]
 async fn login(req: HttpRequest) -> Either<Redirect, NamedFile> {
-    return match req.cookie("token") {
-        Some(_) => Either::Left(Redirect::to("/profile").permanent()),
+    return match decode_jwt_from_req(req) {
+        Some(jwt) => {
+            if jwt.usrnm != "None" {
+                Either::Left(Redirect::to("/profile").permanent())
+            } else {
+                let path: PathBuf = "./static/html/login.html".parse().unwrap();
+                Either::Right(NamedFile::open(path).unwrap())
+            }
+        }
         None => {
             let path: PathBuf = "./static/html/login.html".parse().unwrap();
             Either::Right(NamedFile::open(path).unwrap())
@@ -90,24 +129,29 @@ async fn login(req: HttpRequest) -> Either<Redirect, NamedFile> {
 }
 
 #[get("/register")]
-async fn register() -> impl Responder {
+async fn register(req: HttpRequest) -> impl Responder {
     let path: PathBuf = "./static/html/register.html".parse().unwrap();
     return NamedFile::open(path).unwrap();
 }
 
 #[get("/profile")]
 async fn profile(tmpl: Data<Tera>, req: HttpRequest) -> Either<Html, Redirect> {
-    return match req.cookie("token") {
-        Some(x) => {
-            let mut ctx = tera::Context::new();
-            Either::Left(Html::new(tmpl.render("profile.html", &ctx).unwrap()))
-        },
-        None => Either::Right(Redirect::to("/login").permanent()),
+    let lang_id = get_lang_id(req.clone());
+
+    let mut ctx = tera::Context::new();
+    if let Some(jwt) = decode_jwt_from_req(req) {  
+        ctx.insert("username", &jwt.usrnm);
+        ctx.insert("lang", &lang_id);
+        return Either::Left(Html::new(tmpl.render("profile.html", &ctx).unwrap()));
+    } else {
+        return Either::Right(Redirect::to("/login").permanent());
     }
 }
 
 #[get("/answer")]
 async fn next_question(tmpl: Data<Tera>, req: HttpRequest) -> Either<Html, Redirect> {
+    let lang_id = get_lang_id(req.clone());
+
     return match req.cookie("token") {
         Some(x) => {
             let mut ctx = tera::Context::new();
