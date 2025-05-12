@@ -10,10 +10,12 @@ use tera::Tera;
 use std::path::PathBuf;
 use deadpool_postgres::{Config, Client, Pool, ManagerConfig, RecyclingMethod, tokio_postgres::NoTls};
 use env_file_reader::read_file;
+use rand::Rng;
+use yaml_rust2::yaml::Yaml;
 mod auth;
-use auth::{UserLogin, get_lang_id, encode_jwt, decode_jwt_from_req};
+use auth::{UserLogin, ENV, get_lang_id, encode_jwt, decode_jwt_from_req};
 mod misc;
-use misc::{TEXT, validate};
+use misc::{TEXT, QUESTIONS, validate};
 mod db;
 use db::{User, add_user, get_user};
 
@@ -90,24 +92,13 @@ async fn user_logout() -> impl Responder {
     return HttpResponse::Found()
         .append_header(("Location", "/start"))
         .cookie(cookie)
-        .finish()
+        .finish();
 }
 
 #[get("/")]
 async fn index(req: HttpRequest) -> impl Responder {
-    let lang_id = get_lang_id(req);
-
-    let cookie = Cookie::build("token", encode_jwt("None", lang_id))
-        .path("/")
-        .http_only(true)
-        .same_site(SameSite::Lax)
-        .max_age(time::Duration::hours(1))
-        .finish();
-    
-    return HttpResponse::Ok()
-        .content_type(ContentType::html())
-        .cookie(cookie)
-        .body("./static/html/start.html");
+    let path: PathBuf = "./static/html/start.html".parse().unwrap();
+    return NamedFile::open(path).unwrap();
 }
 
 #[get("/login")]
@@ -150,15 +141,19 @@ async fn profile(tmpl: Data<Tera>, req: HttpRequest) -> Either<Html, Redirect> {
 
 #[get("/answer")]
 async fn next_question(tmpl: Data<Tera>, req: HttpRequest) -> Either<Html, Redirect> {
-    let lang_id = get_lang_id(req.clone());
 
-    return match req.cookie("token") {
-        Some(x) => {
-            let mut ctx = tera::Context::new();
-            ctx.insert("answers", &["pivo", "snus", "vkid"]);
-            Either::Left(Html::new(tmpl.render("question.html", &ctx).unwrap()))
-        },
-        None => Either::Right(Redirect::to("/login").permanent()),
+    return if req.cookie("token").is_some() {
+        let lang_id = get_lang_id(req.clone());
+        let mut rng = rand::thread_rng();
+        let question: &Yaml = &QUESTIONS[rng.gen_range(0..50)];
+
+        let mut ctx = tera::Context::new();
+        ctx.insert("theme", &question["theme"].as_str());
+        ctx.insert("question", &question["question"].as_str());
+        ctx.insert("options", &question["options"].as_vec().unwrap().into_iter().map(|s| s.as_str().unwrap()).collect::<Vec<&str>>());
+        Either::Left(Html::new(tmpl.render("question.html", &ctx).unwrap()))
+    } else {
+        Either::Right(Redirect::to("/login").permanent())
     }
 }
 
@@ -166,16 +161,14 @@ async fn next_question(tmpl: Data<Tera>, req: HttpRequest) -> Either<Html, Redir
 async fn main() -> std::io::Result<()> {
 
     HttpServer::new(|| {
-        let env: std::collections::HashMap<String, String> = read_file(".env").unwrap();
-
         let tera = Tera::new("/app/static/html/*").unwrap();
-
+ 
         let mut cfg = Config::new();
         cfg.dbname = Some("app".to_string());
         cfg.host = Some("postgres".to_string());
         cfg.port = Some(5432);
-        cfg.user = Some(env["POSTGRES_USER"].clone());
-        cfg.password = Some(env["POSTGRES_PASSWORD"].clone());
+        cfg.user = Some(ENV["POSTGRES_USER"].clone());
+        cfg.password = Some(ENV["POSTGRES_PASSWORD"].clone());
         cfg.manager = Some(ManagerConfig {
             recycling_method: RecyclingMethod::Fast,
         });

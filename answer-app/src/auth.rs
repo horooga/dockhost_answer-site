@@ -1,5 +1,5 @@
 
-use jsonwebtoken::{encode, decode, Header, Algorithm, Validation, EncodingKey, DecodingKey};
+use jsonwebtoken::{encode, decode, Header, Validation, EncodingKey, DecodingKey};
 use serde::{Deserialize, Serialize};
 use time::{Duration, OffsetDateTime};
 use lazy_static::lazy_static;
@@ -21,8 +21,8 @@ pub struct UserLogin {
 }
 
 lazy_static! {
-    pub static ref env: std::collections::HashMap<String, String> = read_file(".env").unwrap();
-    static ref s: &'static String = &env["JWT_SECRET"];
+    pub static ref ENV: std::collections::HashMap<String, String> = read_file(".env").unwrap();
+    static ref s: &'static String = &ENV["JWT_SECRET"];
 
     pub static ref JWT_SECRET: &'static [u8] = s.as_bytes();
 }

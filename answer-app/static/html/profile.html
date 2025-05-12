@@ -8,13 +8,15 @@
   <h1>Profile</h1>
 
   <div>
-    <h1>Username:</h1>
-    <p>{{ username }}</p>
+    <h1>Username:{{ username }}</h1>
   </div>
 
   <form action="/user-logout", method="post">
     <button type="submit">Logout</button>
   </form>
 
-  <button type="button" onclick="alert('Logged out!')">Log Out</button>
+  <a href="/answer">
+    <button>Start answering</button>
+  </a>
+
 </body>

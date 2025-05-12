@@ -1,0 +1,119 @@
+- topic: math
+  question: What is 5 + 3?
+  options:
+    - 6
+    - 7
+    - 8
+    - 9
+  answer: 3
+
+- topic: math
+  question: Solve for x: 2x = 10. What is x?
+  options: false
+  answer: 5
+
+- topic: math
+  question: Which number is prime?
+  options:
+    - 4
+    - 6
+    - 7
+    - 9
+  answer: 3
+
+- topic: math
+  question: What is the square of 6?
+  options: false
+  answer: 36
+
+- topic: math
+  question: What is 15 - 7?
+  options:
+    - 7
+    - 8
+    - 9
+  answer: 2
+
+- topic: math
+  question: What is the value of pi (approximate to 2 decimals)?
+  options: false
+  answer: 3.14
+
+- topic: math
+  question: What is 9 divided by 3?
+  options:
+    - 2
+    - 3
+    - 4
+    - 5
+  answer: 2
+
+- topic: math
+  question: What is the next number in the sequence: 2, 4, 6, __?
+  options: false
+  answer: 8
+
+- topic: math
+  question: What is 7 times 3?
+  options:
+    - 20
+    - 21
+    - 22
+  answer: 2
+
+- topic: math
+  question: If x + 3 = 10, what is x?
+  options: false
+  answer: 7
+
+- topic: physics
+  question: What force pulls objects toward Earth?
+  options:
+    - Magnetism
+    - Gravity
+    - Friction
+    - Electricity
+  answer: 2
+
+- topic: physics
+  question: What is the unit of force?
+  options:
+    - Newton
+    - Joule
+    - Watt
+  answer: 1
+
+- topic: physics
+  question: What is the speed of light in vacuum (approximate in m/s)?
+  options: false
+  answer: 300000000
+
+- topic: physics
+  question: What is the formula for speed?
+  options: false
+  answer: distance/time
+
+- topic: physics
+  question: Which state of matter has a fixed shape?
+  options:
+    - Liquid
+    - Gas
+    - Solid
+  answer: 3
+
+- topic: physics
+  question: What is the energy stored in a moving object called?
+  options:
+    - Potential energy
+    - Kinetic energy
+    - Thermal energy
+  answer: 2
+
+- topic: physics
+  question: What is the unit of electric current?
+  options:
+    - Volt
+    - Ampere
+    - Ohm
+  answer: 2
+

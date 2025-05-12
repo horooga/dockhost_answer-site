@@ -1,5 +1,5 @@
 use deadpool_postgres::Client;
-use crate::{auth::Claims, misc::TEXT};
+use crate::{misc::TEXT};
 
 pub struct User {
     pub username: String,

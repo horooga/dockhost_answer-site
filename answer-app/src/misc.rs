@@ -1,5 +1,6 @@
 use lazy_static::lazy_static;
 use std::collections::HashMap;
+use yaml_rust2::{YamlLoader, yaml::Yaml};
 
 lazy_static! {
     pub static ref TEXT: HashMap<&'static str, [&'static str; 2]> = HashMap::from([
@@ -12,6 +13,10 @@ lazy_static! {
         ("user_registered", ["Username is already registered", "Юзернейм уже зарегистрирован"]),
         ("sorry", ["Sorry, try again later", "Извините, попробуйте позже"]),
     ]);
+
+    static ref file: String = std::fs::read_to_string("/app/questions.yaml").unwrap();
+    static ref docs: Vec<Yaml> = YamlLoader::load_from_str(file.as_str()).unwrap();
+    pub static ref QUESTIONS: Yaml = docs[0].clone();
 }
 
 pub async fn validate(username: &String, password: &String, language_id: u8) -> Result<(), Vec<String>> {
