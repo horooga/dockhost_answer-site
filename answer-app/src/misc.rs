@@ -1,6 +1,13 @@
 use lazy_static::lazy_static;
 use std::collections::HashMap;
 use yaml_rust2::{YamlLoader, yaml::Yaml};
+use serde::Deserialize;
+
+#[derive(Deserialize)]
+pub struct Answer {
+    pub question: String,
+    pub answer: String,
+}
 
 lazy_static! {
     pub static ref TEXT: HashMap<&'static str, [&'static str; 2]> = HashMap::from([
@@ -17,6 +24,8 @@ lazy_static! {
     static ref file: String = std::fs::read_to_string("/app/questions.yaml").unwrap();
     static ref docs: Vec<Yaml> = YamlLoader::load_from_str(file.as_str()).unwrap();
     pub static ref QUESTIONS: Yaml = docs[0].clone();
+    static ref questions_vec: Vec<(&'static str, &'static str)> = QUESTIONS.as_hash().unwrap().values().into_iter().map(|i| i.as_vec().unwrap()).flatten().map(|v| (v["question"].as_str().unwrap(), v["answer"].as_str().unwrap())).collect();
+    pub static ref ANSWERS: HashMap<&'static str, &'static str> = questions_vec.clone().into_iter().collect();
 }
 
 pub async fn validate(username: &String, password: &String, language_id: u8) -> Result<(), Vec<String>> {

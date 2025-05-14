@@ -15,7 +15,7 @@ use yaml_rust2::yaml::Yaml;
 mod auth;
 use auth::{UserLogin, ENV, get_lang_id, encode_jwt, decode_jwt_from_req};
 mod misc;
-use misc::{TEXT, QUESTIONS, validate};
+use misc::{TEXT, QUESTIONS, ANSWERS, Answer, validate};
 mod db;
 use db::{User, add_user, get_user};
 
@@ -103,19 +103,16 @@ async fn index(req: HttpRequest) -> impl Responder {
 
 #[get("/login")]
 async fn login(req: HttpRequest) -> Either<Redirect, NamedFile> {
-    return match decode_jwt_from_req(req) {
-        Some(jwt) => {
-            if jwt.usrnm != "None" {
-                Either::Left(Redirect::to("/profile").permanent())
-            } else {
-                let path: PathBuf = "./static/html/login.html".parse().unwrap();
-                Either::Right(NamedFile::open(path).unwrap())
-            }
-        }
-        None => {
+    return if let Some(jwt) = decode_jwt_from_req(req) {
+        if jwt.usrnm != "None" {
+            Either::Left(Redirect::to("/profile").see_other())
+        } else {
             let path: PathBuf = "./static/html/login.html".parse().unwrap();
             Either::Right(NamedFile::open(path).unwrap())
-        },
+        }
+    } else {
+        let path: PathBuf = "./static/html/login.html".parse().unwrap();
+        Either::Right(NamedFile::open(path).unwrap())
     }
 }
 
@@ -135,25 +132,44 @@ async fn profile(tmpl: Data<Tera>, req: HttpRequest) -> Either<Html, Redirect> {
         ctx.insert("lang", &lang_id);
         return Either::Left(Html::new(tmpl.render("profile.html", &ctx).unwrap()));
     } else {
-        return Either::Right(Redirect::to("/login").permanent());
+        return Either::Right(Redirect::to("/login").see_other());
     }
 }
 
 #[get("/answer")]
-async fn next_question(tmpl: Data<Tera>, req: HttpRequest) -> Either<Html, Redirect> {
+async fn get_question(tmpl: Data<Tera>, req: HttpRequest) -> Either<Html, Redirect> {
 
     return if req.cookie("token").is_some() {
         let lang_id = get_lang_id(req.clone());
         let mut rng = rand::thread_rng();
-        let question: &Yaml = &QUESTIONS[rng.gen_range(0..50)];
+        let topic: &str = ["math", "physics"][rng.gen_range(0..2)];
+        let question: &Yaml = &QUESTIONS[topic][rng.gen_range(0..10)];
 
         let mut ctx = tera::Context::new();
-        ctx.insert("theme", &question["theme"].as_str());
-        ctx.insert("question", &question["question"].as_str());
-        ctx.insert("options", &question["options"].as_vec().unwrap().into_iter().map(|s| s.as_str().unwrap()).collect::<Vec<&str>>());
+        let options_flag = question["options_flag"].as_bool().unwrap();
+        ctx.insert("topic", &topic);
+        ctx.insert("question", &question["question"].as_str().unwrap());
+        ctx.insert("options_flag", &options_flag);
+        if options_flag {
+            ctx.insert("options", &question["options"].as_vec().unwrap().into_iter().map(|s| s.as_str().unwrap()).collect::<Vec<&str>>());
+        }
         Either::Left(Html::new(tmpl.render("question.html", &ctx).unwrap()))
     } else {
-        Either::Right(Redirect::to("/login").permanent())
+        Either::Right(Redirect::to("/login").see_other())
+    }
+}
+
+#[post("/answer-check")]
+async fn check_answer(tmpl: Data<Tera>, req: HttpRequest, Form(form): Form<Answer>) -> impl Responder {
+    return if req.cookie("token").is_some() {
+        let lang_id = get_lang_id(req.clone());
+        if &form.answer == ANSWERS[&form.question.as_str()] {
+            Redirect::to("/answer").see_other()
+        } else {
+            Redirect::to("/login").see_other()
+        }
+    } else {
+        Redirect::to("/login").see_other()
     }
 }
 
@@ -176,7 +192,8 @@ async fn main() -> std::io::Result<()> {
  
         App::new()
             .service(index)
-            .service(next_question)
+            .service(get_question)
+            .service(check_answer)
             .service(login)
             .service(register)
             .service(user_register)

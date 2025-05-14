@@ -5,18 +5,19 @@
   <title>Answer</title>
 </head>
 <body>
-  <h1>Theme: {{ theme }}<h1><br>
+  <h1>Topic: {{ topic }}<h1><br>
   <h1>{{ question }}</h1>
-  <form method="post" action="#">
-    {% if answers %}
+  <form action="/answer-check" method="POST" autocomplete="off">
+    {% if option_flag %}
       <div class="choice-group">
-        {% for answer in answers %}
-          <input type="radio" id="btn{{ loop.index }}" name="answer" value={{ answer }} required>
-          <label for="btn{{ loop.index }}">{{ answer }}</label>
+        {% for option in options %}
+          <input type="radio" id="btn{{ loop.index }}" name="answer" value={{ option }} required>
+          <label for="btn{{ loop.index }}">{{ option }}</label>
         {% endfor %}
       </div>
       <button type="submit">Answer</button>
     {% else %}
+      <input type="hidden" name="question" value="{{ question }}">
       <input name="answer">
       <button type="submit">Answer</button>
     {% endif %}
