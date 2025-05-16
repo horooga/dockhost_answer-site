@@ -5,13 +5,13 @@
   <title>Answer</title>
 </head>
 <body>
+  <h1>Register</h1>
   {% if errs %}
       {% for err in errs %}
-          <h1 style="color:#a00000">err</h1>
+          <li style="color:#a00000">{{ err }}</li>
       {% endfor %}
   {% endif %}
   <form action="/user-register" method="POST" autocomplete="off">
-    <h1>Register</h1>
 
     <label for="username">Username</label>
     <input id="username" name="username" type="text" required autocomplete="username">
