@@ -1,0 +1,29 @@
+<head>
+  <meta charset="UTF-8"/>
+  <link rel="stylesheet" href="static/pikme-b.css"/>
+  <link rel="icon" type="image/x-icon" href="/static/favicon.ico" />
+  <title>Answer</title>
+</head>
+<body>
+  <div class="page">
+    <div class="icon-container">
+      <img class="icon" src="static/{{ topic }}_icon.png">
+    </div>
+    <h1 class="question">{{ question }}</h1>
+    <form action="/answer-check" method="POST" autocomplete="off">
+      {% if options is defined %}
+        <div class="choice-group">
+          {% for option in options %}
+            <input type="radio" id="btn{{ loop.index }}" name="answer" value={{ option }} required>
+            <label for="btn{{ loop.index }}">{{ option }}</label>
+          {% endfor %}
+        </div>
+      {% else %}
+        <input name="answer">
+      {% endif %}
+      <input type="hidden" name="topic" value="{{ topic }}">
+      <input type="hidden" name="qstn_id" value="{{ qstn_id }}">
+      <button type="submit">Answer</button> 
+    </form>
+  </div>
+</body>
