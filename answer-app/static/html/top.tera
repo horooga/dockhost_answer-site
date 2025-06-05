@@ -1,0 +1,19 @@
+<head>
+  <meta charset="UTF-8"/>
+  <link rel="stylesheet" href="static/pikme-b.css"/>
+  <link rel="icon" type="image/x-icon" href="/static/favicon.ico" />
+  <title>Answer</title>
+</head>
+<body>
+  <div class="page">
+    <h1>Top users</h1>
+
+    {% if top_users is defined %}
+        {% for user in top_users %}
+            <li>{{ user.username }}: algebra - {{ user.algebra}}, chemistry - {{ user.chemistry }}, geometry - {{ user.geometry }}, physics - {{ user.physics }}</li>
+        {% endfor %}
+    {% else %}
+        <h1> There are no users :(</h1>
+    {% endif %}
+  </div>
+</body>

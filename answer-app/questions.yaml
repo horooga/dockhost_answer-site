@@ -1,0 +1,449 @@
+- question:
+    - "Solve for x: 3x + 5 = 20. What is x?"
+    - "Решите для x: 3x + 5 = 20. Чему равно x?"
+  answer:
+    - "5"
+  topic: algebra
+
+- question:
+    - "Factorize: x^2 - 9"
+    - "Разложите на множители: x^2 - 9"
+  options:
+    - 
+      - "(x - 3)(x + 3)"
+      - "(x - 9)(x + 1)"
+      - "(x - 1)(x + 9)"
+      - "(x - 4)(x + 4)"
+  answer:
+    - "(x - 3)(x + 3)"
+  topic: algebra
+
+- question:
+    - "What is the value of y if 2y - 4 = 10?"
+    - "Чему равно y, если 2y - 4 = 10?"
+  answer:
+    - "7"
+  topic: algebra
+
+- question:
+    - "Simplify: 4(x + 3) - 2x"
+    - "Упростите: 4(x + 3) - 2x"
+  answer:
+    - "2x + 12"
+  topic: algebra
+
+- question:
+    - "If f(x) = 2x + 1, what is f(3)?"
+    - "Если f(x) = 2x + 1, чему равно f(3)?"
+  answer:
+    - "7"
+  topic: algebra
+
+- question:
+    - "Solve the inequality: 5x - 3 > 12"
+    - "Решите неравенство: 5x - 3 > 12"
+  answer:
+    - "x > 3"
+  topic: algebra
+
+- question:
+    - "What is the quadratic formula used to solve ax^2 + bx + c = 0?"
+    - "Какова формула квадратичного уравнения для решения ax^2 + bx + c = 0?"
+  options:
+    - 
+      - "(-b ± √(b² - 4ac)) / 2a"
+      - "(b ± √(b² + 4ac)) / 2a"
+      - "(-b ± √(4ac - b²)) / a"
+      - "(-b ± √(b² - 4ac)) / a"
+  answer:
+    - "(-b ± √(b² - 4ac)) / 2a"
+  topic: algebra
+
+- question:
+    - "Expand: (x + 2)(x + 5)"
+    - "Раскройте скобки: (x + 2)(x + 5)"
+  answer:
+    - "x^2 + 7x + 10"
+  topic: algebra
+
+- question:
+    - "What is the slope of the line passing through points (1,2) and (3,8)?"
+    - "Чему равен наклон линии, проходящей через точки (1,2) и (3,8)?"
+  answer:
+    - "3"
+  topic: algebra
+
+- question:
+    - "If y = 3x + 4, what is y when x = 0?"
+    - "Если y = 3x + 4, чему равно y при x = 0?"
+  answer:
+    - "4"
+  topic: algebra
+
+- question:
+    - "What is the sum of the interior angles of a triangle?"
+    - "Какова сумма внутренних углов треугольника?"
+  options:
+    - 
+      - "180 degrees"
+      - "90 degrees"
+      - "360 degrees"
+      - "270 degrees"
+    - 
+      - "180 градусов"
+      - "90 градусов"
+      - "360 градусов"
+      - "270 градусов"
+  answer:
+    - "180 degrees"
+    - "180 градусов"
+  topic: geometry
+
+- question:
+    - "Calculate the area of a rectangle with length 8 and width 3."
+    - "Вычислите площадь прямоугольника с длиной 8 и шириной 3."
+  answer:
+    - "24"
+  topic: geometry
+
+- question:
+    - "What is the Pythagorean theorem?"
+    - "Что такое теорема Пифагора?"
+  options:
+    - 
+      - "a^2 + b^2 = c^2"
+      - "a + b = c"
+      - "a^2 - b^2 = c^2"
+      - "a^2 + b = c"
+  answer:
+    - "a^2 + b^2 = c^2"
+  topic: geometry
+
+- question:
+    - "Find the circumference of a circle with radius 7 (use π ≈ 3.14)."
+    - "Найдите длину окружности круга с радиусом 7 (используйте π ≈ 3.14)."
+  answer:
+    - "43.96"
+  topic: geometry
+
+- question:
+    - "What type of triangle has all sides equal?"
+    - "Какой тип треугольника имеет все стороны равными?"
+  options:
+    - 
+      - "Isosceles"
+      - "Equilateral"
+      - "Scalene"
+      - "Right"
+    - 
+      - "Равнобедренный"
+      - "Равносторонний"
+      - "Разносторонний"
+      - "Прямоугольный"
+  answer:
+    - "Equilateral"
+    - "Равносторонний"
+  topic: geometry
+
+- question:
+    - "Calculate the volume of a cube with side length 4."
+    - "Вычислите объем куба со стороной 4."
+  answer:
+    - "64"
+  topic: geometry
+
+- question:
+    - "What is the measure of each interior angle in a regular pentagon?"
+    - "Чему равен каждый внутренний угол правильного пятиугольника?"
+  answer:
+    - "108"
+  topic: geometry
+
+- question:
+    - "How many degrees are in a straight angle?"
+    - "Сколько градусов в развернутом угле?"
+  options:
+    - 
+      - "90"
+      - "180"
+      - "360"
+      - "45"
+  answer:
+    - "180"
+  topic: geometry
+
+- question:
+    - "What is the length of the hypotenuse of a right triangle with legs 6 and 8?"
+    - "Чему равна гипотенуза прямоугольного треугольника с катетами 6 и 8?"
+  answer:
+    - "10"
+  topic: geometry
+
+- question:
+    - "What is the formula for the area of a circle?"
+    - "Какова формула площади круга?"
+  options:
+    - 
+      - "πr^2"
+      - "2πr"
+      - "πd"
+      - "r^2"
+  answer:
+    - "πr^2"
+  topic: geometry
+
+- question:
+    - "What is the chemical symbol for water?"
+    - "Каков химический символ воды?"
+  options:
+    - 
+      - "H2O"
+      - "O2"
+      - "CO2"
+      - "NaCl"
+  answer:
+    - "H2O"
+  topic: chemistry
+
+- question:
+    - "What is the atomic number of carbon?"
+    - "Каков атомный номер углерода?"
+  answer:
+    - "6"
+  topic: chemistry
+
+- question:
+    - "Which gas is most abundant in the Earth's atmosphere?"
+    - "Какой газ наиболее распространен в атмосфере Земли?"
+  options:
+    - 
+      - "Oxygen"
+      - "Nitrogen"
+      - "Carbon Dioxide"
+      - "Hydrogen"
+    - 
+      - "Кислород"
+      - "Азот"
+      - "Углекислый газ"
+      - "Водород"
+  answer:
+    - "Nitrogen"
+    - "Азот"
+  topic: chemistry
+
+- question:
+    - "What is the pH value of pure water?"
+    - "Каково значение pH чистой воды?"
+  answer:
+    - "7"
+  topic: chemistry
+
+- question:
+    - "What type of bond involves the sharing of electron pairs between atoms?"
+    - "Какой тип связи включает совместное использование пар электронов между атомами?"
+  options:
+    - 
+      - "Ionic bond"
+      - "Covalent bond"
+      - "Hydrogen bond"
+      - "Metallic bond"
+    - 
+      - "Ионная связь"
+      - "Ковалентная связь"
+      - "Водородная связь"
+      - "Металлическая связь"
+  answer:
+    - "Covalent bond"
+    - "Ковалентная связь"
+  topic: chemistry
+
+- question:
+    - "What is the chemical formula for table salt?"
+    - "Какова химическая формула поваренной соли?"
+  options:
+    - 
+      - "NaCl"
+      - "KCl"
+      - "Na2SO4"
+      - "CaCl2"
+  answer:
+    - "NaCl"
+  topic: chemistry
+
+- question:
+    - "Which element has the symbol 'Fe'?"
+    - "Какой элемент имеет символ 'Fe'?"
+  options:
+    - 
+      - "Fluorine"
+      - "Iron"
+      - "Francium"
+      - "Fermium"
+    - 
+      - "Фтор"
+      - "Железо"
+      - "Франций"
+      - "Фермий"
+  answer:
+    - "Iron"
+    - "Железо"
+  topic: chemistry
+
+- question:
+    - "What is the process by which plants make food using sunlight?"
+    - "Какой процесс позволяет растениям производить пищу с помощью солнечного света?"
+  options:
+    - 
+      - "Respiration"
+      - "Photosynthesis"
+      - "Fermentation"
+      - "Transpiration"
+    - 
+      - "Дыхание"
+      - "Фотосинтез"
+      - "Ферментация"
+      - "Испарение"
+  answer:
+    - "Photosynthesis"
+    - "Фотосинтез"
+  topic: chemistry
+
+- question:
+    - "What is the main gas produced during combustion?"
+    - "Какой основной газ выделяется при горении?"
+  options:
+    - 
+      - "Oxygen"
+      - "Carbon Dioxide"
+      - "Nitrogen"
+      - "Hydrogen"
+    - 
+      - "Кислород"
+      - "Углекислый газ"
+      - "Азот"
+      - "Водород"
+  answer:
+    - "Carbon Dioxide"
+    - "Углекислый газ"
+  topic: chemistry
+
+- question:
+    - "What is the name of HCl in its aqueous form?"
+    - "Как называется HCl в водном растворе?"
+  options:
+    - 
+      - "Hydrochloric acid"
+      - "Hydrogen chloride"
+      - "Hydrofluoric acid"
+      - "Hydrosulfuric acid"
+    - 
+      - "Соляная кислота"
+      - "Хлороводород"
+      - "Плавиковая кислота"
+      - "Сернистоводородная кислота"
+  answer:
+    - "Hydrochloric acid"
+    - "Соляная кислота"
+  topic: chemistry
+
+- question:
+    - "What force pulls objects toward Earth?"
+    - "Какая сила притягивает объекты к Земле?"
+  options:
+    - 
+      - "Magnetism"
+      - "Gravity"
+      - "Friction"
+      - "Electricity"
+    - 
+      - "Магнетизм"
+      - "Гравитация"
+      - "Трение"
+      - "Электричество"
+  answer:
+    - "Gravity"
+    - "Гравитация"
+  topic: physics
+
+- question:
+    - "What is the unit of force?"
+    - "Какова единица силы?"
+  options:
+    - 
+      - "Newton"
+      - "Joule"
+      - "Watt"
+    - 
+      - "Ньютон"
+      - "Джоуль"
+      - "Ватт"
+  answer:
+    - "Newton"
+    - "Ньютон"
+  topic: physics
+
+- question:
+    - "What is the speed of light in vacuum (approximate in m/s)?"
+    - "Какова скорость света в вакууме (приблизительно в м/с)?"
+  answer:
+    - "300000000"
+  topic: physics
+
+- question:
+    - "What is the formula for speed?"
+    - "Какова формула скорости?"
+  answer:
+    - "distance/time"
+  topic: physics
+
+- question:
+    - "Which state of matter has a fixed shape?"
+    - "Какое состояние вещества имеет фиксированную форму?"
+  options:
+    - 
+      - "Liquid"
+      - "Gas"
+      - "Solid"
+    - 
+      - "Жидкость"
+      - "Газ"
+      - "Твердое тело"
+  answer:
+    - "Solid"
+    - "Твердое тело"
+  topic: physics
+
+- question:
+    - "What is the energy stored in a moving object called?"
+    - "Как называется энергия, запасенная в движущемся объекте?"
+  options:
+    - 
+      - "Potential energy"
+      - "Kinetic energy"
+      - "Thermal energy"
+    - 
+      - "Потенциальная энергия"
+      - "Кинетическая энергия"
+      - "Тепловая энергия"
+  answer:
+    - "Kinetic energy"
+    - "Кинетическая энергия"
+  topic: physics
+
+- question:
+    - "What is the unit of electric current?"
+    - "Какова единица электрического тока?"
+  options:
+    - 
+      - "Volt"
+      - "Ampere"
+      - "Ohm"
+    - 
+      - "Вольт"
+      - "Ампер"
+      - "Ом"
+  answer:
+    - "Ampere"
+    - "Ампер"
+  topic: physics
+

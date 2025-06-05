@@ -1,0 +1,36 @@
+<head>
+  <meta charset="UTF-8"/>
+  <link rel="stylesheet" href="static/pikme-b.css"/>
+  <link rel="icon" type="image/x-icon" href="/static/favicon.ico" />
+  <title>Answer</title>
+</head>
+<body>
+  <div class="page">
+    <form action="/lang-change" method="POST">
+      <select name="lang_id" onchange="this.form.submit()">
+        <option>Pick language</option>
+        <option value="0">English</option>
+        <option value="1">Russian</option>
+      </select>
+    </form>
+
+    <h1>Profile</h1>
+
+    <div>
+      <h1>Username:{{ username }}</h1>
+    </div>
+
+    <form action="/logout", method="POST">
+      <button type="submit">Logout</button>
+    </form>
+
+    <a href="/answer">
+      <button>Answer</button>
+    </a>
+
+    <a href="/top">
+      <button>Top</button>
+    </a>
+
+  </div>
+</body>
